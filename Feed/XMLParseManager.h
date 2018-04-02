@@ -8,11 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol XMLParseManagerDelegate
+
+- (void)dataDidLoad;
+
+@end
+
 @interface XMLParseManager : NSObject<NSXMLParserDelegate>
 
 +(instancetype) sharedManager;
 
 @property (nonatomic, strong) NSMutableArray *articleList;
+@property (nonatomic, weak) id<XMLParseManagerDelegate> delegate;
 
 - (void)loadData;
 

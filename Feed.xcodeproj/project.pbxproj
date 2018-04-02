@@ -14,6 +14,12 @@
 		4E72D98A206D80EE00BC6A70 /* Article.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E72D989206D80EE00BC6A70 /* Article.m */; };
 		4E72D98D206D84D000BC6A70 /* XMLParseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E72D98C206D84D000BC6A70 /* XMLParseManager.m */; };
 		4E72D993206DA46800BC6A70 /* FeedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E72D992206DA46800BC6A70 /* FeedViewController.m */; };
+		C115EB12206DFDA400D5E44E /* ArticleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C115EB11206DFDA400D5E44E /* ArticleCell.m */; };
+		C115EB152071A45000D5E44E /* FirstArticleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C115EB142071A45000D5E44E /* FirstArticleCell.m */; };
+		C129201A2071E01600C432F2 /* ImageDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C12920192071E01600C432F2 /* ImageDownloader.m */; };
+		C1292020207204B600C432F2 /* ImageViewWithSpinner.m in Sources */ = {isa = PBXBuildFile; fileRef = C129201F207204B600C432F2 /* ImageViewWithSpinner.m */; };
+		C1292023207207C600C432F2 /* ImageViewWithSpinner+WebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = C1292022207207C600C432F2 /* ImageViewWithSpinner+WebImage.m */; };
+		C12920262072126400C432F2 /* ArticleWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C12920252072126400C432F2 /* ArticleWebViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +36,18 @@
 		4E72D98C206D84D000BC6A70 /* XMLParseManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XMLParseManager.m; sourceTree = "<group>"; };
 		4E72D991206DA46800BC6A70 /* FeedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FeedViewController.h; sourceTree = "<group>"; };
 		4E72D992206DA46800BC6A70 /* FeedViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FeedViewController.m; sourceTree = "<group>"; };
+		C115EB10206DFDA400D5E44E /* ArticleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArticleCell.h; sourceTree = "<group>"; };
+		C115EB11206DFDA400D5E44E /* ArticleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArticleCell.m; sourceTree = "<group>"; };
+		C115EB132071A45000D5E44E /* FirstArticleCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstArticleCell.h; sourceTree = "<group>"; };
+		C115EB142071A45000D5E44E /* FirstArticleCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstArticleCell.m; sourceTree = "<group>"; };
+		C12920182071E01600C432F2 /* ImageDownloader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageDownloader.h; sourceTree = "<group>"; };
+		C12920192071E01600C432F2 /* ImageDownloader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageDownloader.m; sourceTree = "<group>"; };
+		C129201E207204B600C432F2 /* ImageViewWithSpinner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewWithSpinner.h; sourceTree = "<group>"; };
+		C129201F207204B600C432F2 /* ImageViewWithSpinner.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageViewWithSpinner.m; sourceTree = "<group>"; };
+		C1292021207207C600C432F2 /* ImageViewWithSpinner+WebImage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ImageViewWithSpinner+WebImage.h"; sourceTree = "<group>"; };
+		C1292022207207C600C432F2 /* ImageViewWithSpinner+WebImage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ImageViewWithSpinner+WebImage.m"; sourceTree = "<group>"; };
+		C12920242072126400C432F2 /* ArticleWebViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ArticleWebViewController.h; sourceTree = "<group>"; };
+		C12920252072126400C432F2 /* ArticleWebViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ArticleWebViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,17 +80,24 @@
 		4E72D970206D80BF00BC6A70 /* Feed */ = {
 			isa = PBXGroup;
 			children = (
+				C115EB0F206DFD3400D5E44E /* View */,
 				4E72D987206D80CC00BC6A70 /* Model */,
 				4E72D971206D80BF00BC6A70 /* AppDelegate.h */,
 				4E72D972206D80BF00BC6A70 /* AppDelegate.m */,
 				4E72D991206DA46800BC6A70 /* FeedViewController.h */,
 				4E72D992206DA46800BC6A70 /* FeedViewController.m */,
+				C12920242072126400C432F2 /* ArticleWebViewController.h */,
+				C12920252072126400C432F2 /* ArticleWebViewController.m */,
 				4E72D97A206D80BF00BC6A70 /* Assets.xcassets */,
 				4E72D97C206D80BF00BC6A70 /* LaunchScreen.storyboard */,
 				4E72D97F206D80BF00BC6A70 /* Info.plist */,
 				4E72D980206D80BF00BC6A70 /* main.m */,
 				4E72D98B206D84D000BC6A70 /* XMLParseManager.h */,
 				4E72D98C206D84D000BC6A70 /* XMLParseManager.m */,
+				C12920182071E01600C432F2 /* ImageDownloader.h */,
+				C12920192071E01600C432F2 /* ImageDownloader.m */,
+				C1292021207207C600C432F2 /* ImageViewWithSpinner+WebImage.h */,
+				C1292022207207C600C432F2 /* ImageViewWithSpinner+WebImage.m */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -84,6 +109,19 @@
 				4E72D989206D80EE00BC6A70 /* Article.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		C115EB0F206DFD3400D5E44E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C115EB10206DFDA400D5E44E /* ArticleCell.h */,
+				C115EB11206DFDA400D5E44E /* ArticleCell.m */,
+				C115EB132071A45000D5E44E /* FirstArticleCell.h */,
+				C115EB142071A45000D5E44E /* FirstArticleCell.m */,
+				C129201E207204B600C432F2 /* ImageViewWithSpinner.h */,
+				C129201F207204B600C432F2 /* ImageViewWithSpinner.m */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,8 +196,14 @@
 			files = (
 				4E72D98A206D80EE00BC6A70 /* Article.m in Sources */,
 				4E72D981206D80BF00BC6A70 /* main.m in Sources */,
+				C115EB152071A45000D5E44E /* FirstArticleCell.m in Sources */,
+				C115EB12206DFDA400D5E44E /* ArticleCell.m in Sources */,
 				4E72D973206D80BF00BC6A70 /* AppDelegate.m in Sources */,
 				4E72D993206DA46800BC6A70 /* FeedViewController.m in Sources */,
+				C1292023207207C600C432F2 /* ImageViewWithSpinner+WebImage.m in Sources */,
+				C129201A2071E01600C432F2 /* ImageDownloader.m in Sources */,
+				C1292020207204B600C432F2 /* ImageViewWithSpinner.m in Sources */,
+				C12920262072126400C432F2 /* ArticleWebViewController.m in Sources */,
 				4E72D98D206D84D000BC6A70 /* XMLParseManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

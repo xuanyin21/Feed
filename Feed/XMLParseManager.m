@@ -19,13 +19,14 @@
 
 + (instancetype)sharedManager {
     static dispatch_once_t onceToken;
-    static XMLParseManager *sharedManager;
+    static XMLParseManager *instance;
     
     dispatch_once(&onceToken, ^{
-        sharedManager = [[XMLParseManager alloc] init];
+        instance = [XMLParseManager new];
+        instance.articleList = [NSMutableArray array];
     });
     
-    return sharedManager;
+    return instance;
 }
 
 - (void)loadData {
@@ -39,7 +40,7 @@
     NSURLSession *sharedSession = [NSURLSession sharedSession];
     
     NSURLSessionDataTask *dataTask = [sharedSession dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        NSLog(@"%@",[NSThread currentThread]);
+        
         if (data && (error == nil)) {
             
             [self parseData:data];
@@ -61,11 +62,9 @@
 
 - (void)parserDidStartDocument:(NSXMLParser *)parser {
     NSLog(@"parser start");
-    if (_articleList == nil) {
-        _articleList = [NSMutableArray array];
-    } else {
-        [_articleList removeAllObjects];
-    }
+    
+    [_articleList removeAllObjects];
+
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary<NSString *,NSString *> *)attributeDict {
@@ -99,6 +98,9 @@
     } else if ([self.currentElementName isEqualToString: @"description"]) {
         
         article.descriptionStr = string;
+    } else if ([self.currentElementName isEqualToString: @"link"]) {
+        
+        article.linkStr = string;
     }
 }
 
@@ -108,12 +110,7 @@
 }
 
 - (void)parserDidEndDocument:(NSXMLParser *)parser {
-    NSLog(@"parse finish");
-    for (int i = 0; i < _articleList.count; i++) {
-        Article *article = _articleList[i];
-        NSLog(@"\nTitle:%@\n%@\n%@", article.title, article.descriptionStr, article.imageUrlStr);
-    }
-    
+    [self.delegate dataDidLoad];
 }
 
 @end

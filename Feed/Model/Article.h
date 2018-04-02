@@ -13,5 +13,6 @@
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) NSString *descriptionStr;
 @property (strong, nonatomic) NSString *imageUrlStr;
+@property (strong, nonatomic) NSString *linkStr;
 
 @end

@@ -8,10 +8,15 @@
 
 #import "FeedViewController.h"
 #import "XMLParseManager.h"
+#import "ArticleCell.h"
+#import "FirstArticleCell.h"
+#import "Article.h"
+#import "ArticleWebViewController.h"
 
-@interface FeedViewController ()<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
+@interface FeedViewController ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, XMLParseManagerDelegate>
 
 @property (nonatomic, strong) UICollectionView *collectionView;
+@property (nonatomic, strong) XMLParseManager *xmlManager;
 
 @end
 
@@ -21,10 +26,18 @@ static NSString * const reuseIdentifier = @"ArticleCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    [self loadXMLData];
+    
+    UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadXMLData)];
+    
+    [self.navigationItem setRightBarButtonItem:rightBarButton];
     
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     self.collectionView = [[UICollectionView alloc] initWithFrame:[UIScreen mainScreen].bounds collectionViewLayout:flowLayout];
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    [self.collectionView registerClass:[ArticleCell class] forCellWithReuseIdentifier:reuseIdentifier];
+    [self.collectionView registerClass:[FirstArticleCell class] forCellWithReuseIdentifier:@"FirstArticleCell"];
     
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -32,12 +45,16 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     self.collectionView.contentInset = UIEdgeInsetsMake(23, 16, 10, 16);
     self.collectionView.backgroundColor = [UIColor clearColor];
     [self.view addSubview: self.collectionView];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        
-        XMLParseManager *xmlManager = [XMLParseManager sharedManager];
-        
-        [xmlManager loadData];
-    });
+}
+
+- (void)loadXMLData
+{
+    if (_xmlManager == nil) {
+        _xmlManager = [XMLParseManager sharedManager];
+        _xmlManager.delegate = self;
+    }
+    
+    [_xmlManager loadData];
 }
 
 /*
@@ -50,62 +67,71 @@ static NSString * const reuseIdentifier = @"ArticleCell";
 }
 */
 
-#pragma mark <UICollectionViewDataSource>
+#pragma mark <XMLParseManagerDelegate>
+- (void)dataDidLoad {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView reloadData];
+    });
+}
 
+#pragma mark <UICollectionViewDataSource>
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
 }
 
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 10;
+    return _xmlManager.articleList.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     
-    cell.backgroundColor = [UIColor colorWithRed:arc4random()%255/255.0 green:arc4random()%255/255.0 blue:arc4random()%255/255.0 alpha:1];
-    
-    return cell;
+    if (indexPath.row == 0) {
+        FirstArticleCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier: @"FirstArticleCell" forIndexPath:indexPath];
+        Article *article = _xmlManager.articleList.firstObject;
+        
+        cell.title = article.title;
+        cell.imageUrlStr = article.imageUrlStr;
+        cell.descriptionStr = article.descriptionStr;
+        
+        return cell;
+    } else {
+        ArticleCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
+        Article *article = _xmlManager.articleList[indexPath.row];
+        
+        cell.title = article.title;
+        cell.imageUrlStr = article.imageUrlStr;
+        
+        return cell;
+    }
 }
 
 #pragma mark <UICollectionViewDelegateFlowLayout>
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    CGFloat itemSize = (self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right + 10)) / 2;
+    CGFloat itemWidth;
+    CGFloat itemHeight;
     
-    return  CGSizeMake(itemSize, itemSize);
+    if (indexPath.row == 0) {
+        itemWidth = self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right);
+        itemHeight = itemWidth*300/780 + 60;
+    } else {
+        itemWidth = (self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right + 10)) / 2;
+        itemHeight = itemWidth*300/780 + 60;
+    }
     
+    return CGSizeMake(itemWidth, itemHeight);
 }
 
 #pragma mark <UICollectionViewDelegate>
 
-/*
-// Uncomment this method to specify if the specified item should be highlighted during tracking
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath {
-	return YES;
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    Article *article = _xmlManager.articleList[indexPath.row];
+    NSURL *link = [NSURL URLWithString:article.linkStr];
+    ArticleWebViewController *webVC = [ArticleWebViewController new];
+    webVC.link = link;
+    
+    [self.navigationController pushViewController:webVC animated:YES];
 }
-*/
-
-/*
-// Uncomment this method to specify if the specified item should be selected
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-*/
-
-/*
-// Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldShowMenuForItemAtIndexPath:(NSIndexPath *)indexPath {
-	return NO;
-}
-
-- (BOOL)collectionView:(UICollectionView *)collectionView canPerformAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	return NO;
-}
-
-- (void)collectionView:(UICollectionView *)collectionView performAction:(SEL)action forItemAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender {
-	
-}
-*/
 
 @end
