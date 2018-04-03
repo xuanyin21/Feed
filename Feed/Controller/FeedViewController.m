@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) UICollectionView *collectionView;
 @property (nonatomic, strong) XMLParseManager *xmlManager;
+@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 
 @end
 
@@ -38,9 +39,9 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     
     self.navigationItem.titleView = titleLabel;
     
+    [self setupViews];
     [self loadXMLData];
     
-    [self setupViews];
     
 }
 
@@ -58,21 +59,28 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     self.collectionView.backgroundColor = [UIColor clearColor];
     [self.view addSubview: self.collectionView];
     
+    _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [self.view addSubview:_spinner];
+    
     [self.collectionView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [_spinner setTranslatesAutoresizingMaskIntoConstraints:NO];
     
     NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0];
     NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0f constant:0];
     NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:0];
     NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0];
     
-    [self.view addConstraint:top];
-    [self.view addConstraint:right];
-    [self.view addConstraint:bottom];
-    [self.view addConstraint:left];
+    NSLayoutConstraint *spinnerCenterX = [NSLayoutConstraint constraintWithItem:_spinner attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
+    NSLayoutConstraint *spinnerCenterY = [NSLayoutConstraint constraintWithItem:_spinner attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0];
+    
+    [self.view addConstraints:@[top, right, bottom, left, spinnerCenterX, spinnerCenterY]];
 }
 
 - (void)loadXMLData
 {
+    [_spinner startAnimating];
+    _spinner.hidden = NO;
+    
     if (_xmlManager == nil) {
         _xmlManager = [XMLParseManager sharedManager];
         _xmlManager.delegate = self;
@@ -95,16 +103,26 @@ static NSString * const reuseIdentifier = @"ArticleCell";
 - (void)dataDidLoad
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.spinner.hidden = YES;
+        [self.spinner stopAnimating];
+        
         [self.collectionView reloadData];
     });
+    
 }
 
 - (void)failToLoadWith:(NSError *)error
 {
-    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"Fail to load RSS Feeds" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
-    [alertVC addAction:cancel];
-    [self presentViewController:alertVC animated:YES completion:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        self.spinner.hidden = YES;
+        [self.spinner stopAnimating];
+        
+        UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"Fail to load RSS Feeds" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+        [alertVC addAction:cancel];
+        [self presentViewController:alertVC animated:YES completion:nil];
+    });
 }
 
 #pragma mark <UICollectionViewDataSource>
@@ -125,7 +143,14 @@ static NSString * const reuseIdentifier = @"ArticleCell";
         
         cell.title = article.title;
         cell.imageUrlStr = article.imageUrlStr;
-        cell.descriptionStr = article.descriptionStr;
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"MMM d, yyyy";
+        NSString *pudDateStr = [dateFormatter stringFromDate:article.pubDate];
+        NSString *descriptionStr = [NSString stringWithFormat:@"%@ - %@", pudDateStr, [[[NSAttributedString alloc] initWithData:[article.descriptionStr dataUsingEncoding:NSUTF8StringEncoding]
+                                                                                                                            options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+                                                                                                                                      NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+                                                                                                                 documentAttributes:nil error:nil] string]];
+        cell.descriptionStr = descriptionStr;
         
         return cell;
     } else {
@@ -169,7 +194,7 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     NSURL *link = [NSURL URLWithString:[NSString stringWithFormat:@"%@?displayMobileNavigation=0", article.linkStr]];
     ArticleWebViewController *webVC = [ArticleWebViewController new];
     webVC.link = link;
-    
+    webVC.title = article.title;
     [self.navigationController pushViewController:webVC animated:YES];
 }
 

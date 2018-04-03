@@ -11,5 +11,6 @@
 @interface ArticleWebViewController : UIViewController
 
 @property (nonatomic, strong) NSURL *link;
+@property (nonatomic, strong) NSString *titleStr;
 
 @end

@@ -98,6 +98,10 @@
     } else if ([self.currentElementName isEqualToString: @"link"]) {
         
         article.linkStr = string;
+    } else if ([self.currentElementName isEqualToString: @"pubDate"]) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateFormat = @"E, d MMM yyyy HH:mm:ss Z";
+        article.pubDate = [dateFormatter dateFromString:string];
     }
 }
 

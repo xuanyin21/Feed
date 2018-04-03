@@ -14,5 +14,6 @@
 @property (strong, nonatomic) NSString *descriptionStr;
 @property (strong, nonatomic) NSString *imageUrlStr;
 @property (strong, nonatomic) NSString *linkStr;
+@property (strong, nonatomic) NSDate *pubDate;
 
 @end

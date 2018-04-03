@@ -25,27 +25,48 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = _titleStr;
+    titleLabel.textColor = [UIColor whiteColor];
+    
+    self.navigationItem.titleView = titleLabel;
     
     [self setupViews];
 }
 
 - (void)setupViews
 {
-    _webView = [[WKWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 114)];
-    
+    _webView = [[WKWebView alloc] init];
     _webView.navigationDelegate = self;
     NSURLRequest *request = [NSURLRequest requestWithURL: _link];
     [_webView loadRequest:request];
-    
     [self.view addSubview:_webView];
     
     _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    _spinner.center = self.view.center;
     [self.view addSubview:_spinner];
     
     _bottomToolBar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 114, self.view.frame.size.width, 50)];
     [_bottomToolBar setBarStyle:UIBarStyleDefault];
     [self.view addSubview:_bottomToolBar];
+    
+    [_webView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [_bottomToolBar setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [_spinner setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    NSLayoutConstraint *webViewLeft = [NSLayoutConstraint constraintWithItem:_webView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0];
+    NSLayoutConstraint *webViewRight = [NSLayoutConstraint constraintWithItem:_webView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0f constant:0];
+    NSLayoutConstraint *webViewTop = [NSLayoutConstraint constraintWithItem:_webView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:0];
+    NSLayoutConstraint *webViewBottom = [NSLayoutConstraint constraintWithItem:_webView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-50.0];
+    
+    NSLayoutConstraint *bottomToolBarLeft = [NSLayoutConstraint constraintWithItem:_bottomToolBar attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0];
+    NSLayoutConstraint *bottomToolBarRight = [NSLayoutConstraint constraintWithItem:_bottomToolBar attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0f constant:0];
+    NSLayoutConstraint *bottomToolBarTop = [NSLayoutConstraint constraintWithItem:_bottomToolBar attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:_webView attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0];
+    NSLayoutConstraint *bottomToolBarBottom = [NSLayoutConstraint constraintWithItem:_bottomToolBar attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0];
+    
+    NSLayoutConstraint *spinnerCenterX = [NSLayoutConstraint constraintWithItem:_spinner attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0];
+    NSLayoutConstraint *spinnerCenterY = [NSLayoutConstraint constraintWithItem:_spinner attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0];
+    
+    [self.view addConstraints:@[webViewTop, webViewLeft, webViewRight, webViewBottom, bottomToolBarTop, bottomToolBarLeft, bottomToolBarRight, bottomToolBarBottom, spinnerCenterX, spinnerCenterY]];
     
     UIButton *backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
     [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
@@ -98,8 +119,8 @@
 #pragma mark <WKNavigationDelegate>
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation
 {
-    _spinner.hidden = false;
     [_spinner startAnimating];
+    _spinner.hidden = false;
 }
 
 -(void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
