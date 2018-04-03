@@ -32,6 +32,7 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadXMLData)];
     
     [self.navigationItem setRightBarButtonItem:rightBarButton];
+    [self.navigationItem setBackBarButtonItem:[[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:self action:nil]];
     
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = @"Research & Insights";
@@ -194,7 +195,7 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     NSURL *link = [NSURL URLWithString:[NSString stringWithFormat:@"%@?displayMobileNavigation=0", article.linkStr]];
     ArticleWebViewController *webVC = [ArticleWebViewController new];
     webVC.link = link;
-    webVC.title = article.title;
+    webVC.titleStr = article.title;
     [self.navigationController pushViewController:webVC animated:YES];
 }
 
