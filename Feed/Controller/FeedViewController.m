@@ -28,14 +28,26 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
-    [self loadXMLData];
-    
     UIBarButtonItem *rightBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadXMLData)];
     
     [self.navigationItem setRightBarButtonItem:rightBarButton];
     
+    UILabel *titleLabel = [UILabel new];
+    titleLabel.text = @"Research & Insights";
+    titleLabel.textColor = [UIColor whiteColor];
+    
+    self.navigationItem.titleView = titleLabel;
+    
+    [self loadXMLData];
+    
+    [self setupViews];
+    
+}
+
+- (void)setupViews
+{
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    self.collectionView = [[UICollectionView alloc] initWithFrame:[UIScreen mainScreen].bounds collectionViewLayout:flowLayout];
+    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     [self.collectionView registerClass:[ArticleCell class] forCellWithReuseIdentifier:reuseIdentifier];
     [self.collectionView registerClass:[FirstArticleCell class] forCellWithReuseIdentifier:@"FirstArticleCell"];
     
@@ -45,6 +57,18 @@ static NSString * const reuseIdentifier = @"ArticleCell";
     self.collectionView.contentInset = UIEdgeInsetsMake(23, 16, 10, 16);
     self.collectionView.backgroundColor = [UIColor clearColor];
     [self.view addSubview: self.collectionView];
+    
+    [self.collectionView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0];
+    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0f constant:0];
+    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:0];
+    NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0];
+    
+    [self.view addConstraint:top];
+    [self.view addConstraint:right];
+    [self.view addConstraint:bottom];
+    [self.view addConstraint:left];
 }
 
 - (void)loadXMLData
@@ -68,10 +92,19 @@ static NSString * const reuseIdentifier = @"ArticleCell";
 */
 
 #pragma mark <XMLParseManagerDelegate>
-- (void)dataDidLoad {
+- (void)dataDidLoad
+{
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.collectionView reloadData];
     });
+}
+
+- (void)failToLoadWith:(NSError *)error
+{
+    UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"Fail to load RSS Feeds" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+    [alertVC addAction:cancel];
+    [self presentViewController:alertVC animated:YES completion:nil];
 }
 
 #pragma mark <UICollectionViewDataSource>
@@ -115,7 +148,13 @@ static NSString * const reuseIdentifier = @"ArticleCell";
         itemWidth = self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right);
         itemHeight = itemWidth*300/780 + 60;
     } else {
-        itemWidth = (self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right + 10)) / 2;
+        if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            itemWidth = (self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right + 20)) / 3;
+        } else {
+            itemWidth = (self.collectionView.frame.size.width - (self.collectionView.contentInset.left + self.collectionView.contentInset.right + 10)) / 2;
+        }
+        
         itemHeight = itemWidth*300/780 + 60;
     }
     
@@ -127,11 +166,17 @@ static NSString * const reuseIdentifier = @"ArticleCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     Article *article = _xmlManager.articleList[indexPath.row];
-    NSURL *link = [NSURL URLWithString:article.linkStr];
+    NSURL *link = [NSURL URLWithString:[NSString stringWithFormat:@"%@?displayMobileNavigation=0", article.linkStr]];
     ArticleWebViewController *webVC = [ArticleWebViewController new];
     webVC.link = link;
     
     [self.navigationController pushViewController:webVC animated:YES];
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
 @end

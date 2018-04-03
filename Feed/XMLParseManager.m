@@ -45,7 +45,7 @@
             
             [self parseData:data];
         } else {
-            NSLog(@"error=%@",error);
+            [self.delegate failToLoadWith:error];
         }
     }];
     
@@ -61,15 +61,12 @@
 
 
 - (void)parserDidStartDocument:(NSXMLParser *)parser {
-    NSLog(@"parser start");
     
     [_articleList removeAllObjects];
 
 }
 
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName attributes:(NSDictionary<NSString *,NSString *> *)attributeDict {
-    NSLog(@"start element : %@", elementName);
-    
     if ([elementName isEqualToString:@"item"]) {
         Article *article = [[Article alloc] init];
         [_articleList addObject:article];
@@ -105,7 +102,7 @@
 }
 
 - (void)parser:(NSXMLParser *)parser didEndElement:(NSString *)elementName namespaceURI:(NSString *)namespaceURI qualifiedName:(NSString *)qName {
-    NSLog(@"end element : %@", elementName);
+    
     self.currentElementName = nil;
 }
 

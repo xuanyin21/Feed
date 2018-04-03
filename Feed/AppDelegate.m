@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "FeedViewController.h"
+#import "ArticleWebViewController.h"
 
 @interface AppDelegate ()
 
@@ -20,9 +21,11 @@
     
     self.window = [[UIWindow alloc] initWithFrame: [UIScreen mainScreen].bounds];
     
-    FeedViewController *feedVC = [[FeedViewController alloc] init];
-    
+    FeedViewController *feedVC = [FeedViewController new];
     UINavigationController *rootVC = [[UINavigationController alloc] initWithRootViewController:feedVC];
+    rootVC.navigationBar.barTintColor = [UIColor colorWithRed:54.0/255.0 green:126.0/255.0 blue:188.0/255.0 alpha:1];
+    rootVC.navigationBar.translucent = NO;
+    rootVC.navigationBar.tintColor = [UIColor whiteColor];
     self.window.rootViewController = rootVC;
     
     [self.window makeKeyAndVisible];

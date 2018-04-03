@@ -11,6 +11,7 @@
 @protocol XMLParseManagerDelegate
 
 - (void)dataDidLoad;
+- (void)failToLoadWith:(NSError *)error;
 
 @end
 
